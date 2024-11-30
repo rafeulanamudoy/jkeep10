@@ -1,5 +1,5 @@
 {
-  "name": "tasneem-social-backend",
+  "name": "web_chat_app",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "keywords": [],
   "author": "Ruhul-Amin",
   "license": "ISC",
-  "description": "tasneem-social-backend server",
+  "description": "web chat app",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",

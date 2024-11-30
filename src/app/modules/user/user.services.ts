@@ -14,7 +14,7 @@ const createUserIntoDB = async (payload: User) => {
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
   if (existingUser) {
-    throw new ApiError(409, "user with this email/phone already exist!");
+    throw new ApiError(409, "username already exist!");
   }
   // Create a new user in the database
   const newUser = await prisma.user.create({

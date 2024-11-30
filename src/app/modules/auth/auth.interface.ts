@@ -4,7 +4,5 @@ export interface ILogin {
 }
 
 export interface IProfileUpdate {
-  firstName?: string;
-  lastName?: string;
-  mobile?: string;
+  username?: string;
 }

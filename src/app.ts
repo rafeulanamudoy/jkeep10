@@ -5,6 +5,7 @@ import cors from "cors";
 import router from "./app/routes";
 import GlobalErrorHandler from "./app/middlewares/globalErrorHandler";
 import { PrismaClient } from "@prisma/client";
+import path from "path";
 
 const app: Application = express();
 const prisma = new PrismaClient();
@@ -22,6 +23,7 @@ prisma
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 // Route handler for root endpoint
 app.get("/", (req: Request, res: Response) => {
@@ -31,7 +33,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // Router setup
-app.use("/api/v1", router); // Assuming router handles '/api/v1' routes
+app.use("/api/v1", router);
 
 // Global Error Handler
 app.use(GlobalErrorHandler);

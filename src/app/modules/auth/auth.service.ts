@@ -46,7 +46,10 @@ const getProfileFromDB = async (userId: string) => {
   if (!ObjectId.isValid(userId)) {
     throw new ApiError(400, "Invalid user ID format");
   }
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { group: true },
+  });
   if (!user) {
     throw new ApiError(404, "user not found!");
   }
@@ -71,9 +74,7 @@ const updateProfileIntoDB = async (
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      mobile: userData.mobile,
+      username: userData.username,
     },
   });
 
