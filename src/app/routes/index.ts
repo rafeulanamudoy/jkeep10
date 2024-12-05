@@ -2,7 +2,6 @@ import express from "express";
 import { userRoutes } from "../modules/user/user.route";
 import { authRoute } from "../modules/auth/auth.routes";
 import { groupRoutes } from "../modules/group/group.routes";
-import { chanelRoutes } from "../modules/chanel/chanel.routes";
 
 const router = express.Router();
 
@@ -19,10 +18,6 @@ const moduleRoutes = [
   {
     path: "/group",
     route: groupRoutes,
-  },
-  {
-    path: "/chanel",
-    route: chanelRoutes,
   },
 ];
 
