@@ -48,7 +48,6 @@ const getProfileFromDB = async (userId: string) => {
   }
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { group: true },
   });
   if (!user) {
     throw new ApiError(404, "user not found!");
