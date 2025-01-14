@@ -9,6 +9,7 @@ export default {
   backend_base_url: process.env.BACKEND_BASE_URL,
   jwt: {
     jwt_secret: process.env.JWT_SECRET,
+    gen_salt: process.env.GEN_SALT,
     expires_in: process.env.EXPIRES_IN,
     refresh_token_secret: process.env.REFRESH_TOKEN_SECRET,
     refresh_token_expires_in: process.env.REFRESH_TOKEN_EXPIRES_IN,
@@ -19,14 +20,5 @@ export default {
   emailSender: {
     email: process.env.EMAIL,
     app_pass: process.env.APP_PASS,
-  },
-  ssl: {
-    storeId: process.env.STORE_ID,
-    storePass: process.env.STORE_PASS,
-    successUrl: process.env.SUCCESS_URL,
-    cancelUrl: process.env.CANCEL_URL,
-    failUrl: process.env.FAIL_URL,
-    sslPaymentApi: process.env.SSL_PAYMENT_API,
-    sslValidationApi: process.env.SSL_VALIDATIOIN_API,
   },
 };

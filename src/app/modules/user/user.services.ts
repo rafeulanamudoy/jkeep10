@@ -10,13 +10,12 @@ const createUserIntoDB = async (payload: User) => {
   const existingUser = await prisma.user.findFirst({
     where: { email: payload.email },
   });
-
-  const hashedPassword = await bcrypt.hash(payload.password, 10);
-
   if (existingUser) {
-    throw new ApiError(409, "username already exist!");
+    throw new ApiError(409, "email already exist!");
   }
-  // Create a new user in the database
+
+  const hashedPassword = await bcrypt.hash(payload.password as string, 10);
+
   const newUser = await prisma.user.create({
     data: {
       ...payload,
@@ -24,14 +23,13 @@ const createUserIntoDB = async (payload: User) => {
     },
   });
 
-  return newUser;
+  const { password, ...sanitizedUser } = newUser;
+
+  return sanitizedUser;
 };
 
 //get single user
 const getSingleUserIntoDB = async (id: string) => {
-  if (!ObjectId.isValid(id)) {
-    throw new ApiError(400, "Invalid user ID format");
-  }
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) {
     throw new ApiError(404, "user not found!");

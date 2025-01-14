@@ -22,6 +22,62 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//update user location
+const updateUserLocation = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.user;
+  const updatedUser = await authService.userLocationUpdateInDB(id, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User location added successfully",
+    data: updatedUser,
+  });
+});
+
+//send forgot password otp
+const sendForgotPasswordOtp = catchAsync(
+  async (req: Request, res: Response) => {
+    const email = req.body.email as string;
+    const response = await authService.sendForgotPasswordOtpDB(email);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "OTP send successfully",
+      data: response,
+    });
+  }
+);
+
+// verify forgot password otp code
+const verifyForgotPasswordOtpCode = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload = req.body;
+    const response = await authService.verifyForgotPasswordOtpCodeDB(payload);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "OTP verified successfully.",
+      data: response,
+    });
+  }
+);
+
+// update forgot password
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { newPassword } = req.body;
+  const result = await authService.resetForgotPasswordDB(newPassword, userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Password updated successfully.",
+    data: result,
+  });
+});
+
 // get profile for logged in user
 const getProfile = catchAsync(async (req: any, res: Response) => {
   const { id } = req.user;
@@ -52,4 +108,8 @@ export const authController = {
   loginUser,
   getProfile,
   updateProfile,
+  updateUserLocation,
+  sendForgotPasswordOtp,
+  verifyForgotPasswordOtpCode,
+  resetPassword,
 };

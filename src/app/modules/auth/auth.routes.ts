@@ -15,6 +15,16 @@ router.post(
 
 router.get("/profile", auth(), authController.getProfile);
 
+router.patch(
+  "/update/user-location",
+  auth(),
+  authController.updateUserLocation
+);
+
+router.post("/send-otp", authController.sendForgotPasswordOtp);
+router.post("/verify-otp", authController.verifyForgotPasswordOtpCode);
+router.patch("/reset-password", auth(), authController.resetPassword);
+
 router.put(
   "/profile",
   validateRequest(authValidation.updateProfileSchema),
