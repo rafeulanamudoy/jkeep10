@@ -1,9 +1,10 @@
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import ApiError from "../../errors/ApiErrors";
-const prisma = new PrismaClient();
 import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
-// import { IUser } from "./user.interface";
+import { jwtHelpers } from "../../../helpers/jwtHelpers";
+import config from "../../../config";
+import prisma from "../../../shared/prisma";
 
 //create new user
 const createUserIntoDB = async (payload: User) => {
@@ -16,16 +17,25 @@ const createUserIntoDB = async (payload: User) => {
 
   const hashedPassword = await bcrypt.hash(payload.password as string, 10);
 
-  const newUser = await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       ...payload,
       password: hashedPassword,
     },
   });
 
-  const { password, ...sanitizedUser } = newUser;
+  const accessToken = jwtHelpers.generateToken(
+    user,
+    config.jwt.jwt_secret as string,
+    config.jwt.expires_in as string
+  );
 
-  return sanitizedUser;
+  const { password, ...sanitizedUser } = user;
+
+  return {
+    accessToken,
+    user: sanitizedUser,
+  };
 };
 
 //get single user
