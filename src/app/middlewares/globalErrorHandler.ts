@@ -3,11 +3,11 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { ZodError } from "zod";
 import config from "../../config";
-import ApiError from "../errors/ApiErrors";
 import { IGenericErrorMessage } from "../../interfaces/error";
 import handleValidationError from "../../errors/handleValidationError";
 import handleZodError from "../../errors/handleZodError";
 import handleClientError from "../../errors/handleClientError";
+import ApiError from "../../errors/ApiErrors";
 
 const GlobalErrorHandler = (
   error: any,
