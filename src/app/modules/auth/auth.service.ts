@@ -1,6 +1,6 @@
 import prisma from "../../../shared/prisma";
 import bcrypt from "bcryptjs";
-import ApiError from "../../errors/ApiErrors";
+import ApiError from "../../../errors/ApiErrors";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import config from "../../../config";
 import { User, UserLocation } from "@prisma/client";
