@@ -1,31 +1,34 @@
-import multer from "multer";
 import path from "path";
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(process.cwd(), "uploads"));
   },
-  filename: async function (req, file, cb) {
-    cb(null, file.originalname);
+  filename: function (req, file, cb) {
+    // Add a timestamp to the original filename
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext);
+
+    const newFilename = `${timestamp}-${baseName}${ext}`;
+    cb(null, newFilename);
   },
 });
 
 const upload = multer({ storage: storage });
 
-// upload single image
-const uploadprofileImage = upload.single("profileImage");
-const uploadGroupImage = upload.single("groupImage");
-const uploadChanelImage = upload.single("chanelImage");
+// Upload single images
+const updateProfileImage = upload.single("avatar");
+const uploadQuizImage = upload.single("quizImage");
 
-// upload multiple images for portifilo
-const uploadPortifiloImages = upload.fields([
-  { name: "companyLogo", maxCount: 1 }, // Single file for company logo
-  { name: "companyImages", maxCount: 10 }, // Multiple files for company images
+// Upload multiple images for portfolio
+const sendFiles = upload.fields([
+  { name: "sendFiles", maxCount: 10 },
+  { name: "messageFiles", maxCount: 10 },
 ]);
 
 export const fileUploader = {
-  upload,
-  uploadprofileImage,
-  uploadGroupImage,
-  uploadChanelImage,
-  uploadPortifiloImages,
+  sendFiles,
+  updateProfileImage,
+  uploadQuizImage,
 };
