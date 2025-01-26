@@ -4,8 +4,8 @@ import config from "../../config";
 import { Secret } from "jsonwebtoken";
 
 import httpStatus from "http-status";
-import ApiError from "../errors/ApiErrors";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
+import ApiError from "../../errors/ApiErrors";
 
 const auth = (...roles: string[]) => {
   return async (
