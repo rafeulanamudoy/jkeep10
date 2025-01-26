@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import ApiError from "../../errors/ApiErrors";
+import ApiError from "../../../errors/ApiErrors";
 import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
