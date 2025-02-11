@@ -1,9 +1,9 @@
 {
-  "name": "saarfeld-beach-backend",
+  "name": "template-backend",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start:prod": "node ./dist/server.js",
+    "start": "node ./dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
@@ -12,7 +12,7 @@
   "keywords": [],
   "author": "Ruhul-Amin",
   "license": "ISC",
-  "description": "saarfeld-beach-backend",
+  "description": "template-backend",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
