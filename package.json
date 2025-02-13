@@ -1,5 +1,5 @@
 {
-  "name": "saarfeld-beach-backend",
+  "name": "backend-template",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "keywords": [],
   "author": "Ruhul-Amin",
   "license": "ISC",
-  "description": "saarfeld-beach-backend",
+  "description": "backend-template",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",

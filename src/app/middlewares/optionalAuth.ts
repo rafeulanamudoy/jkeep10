@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import config from "../../config";
 import { JwtPayload, Secret } from "jsonwebtoken";
 import httpStatus from "http-status";
-import ApiError from "../errors/ApiErrors";
 import prisma from "../../shared/prisma";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
+import ApiError from "../../errors/ApiErrors";
 
 const optionalAuth = (required = true, ...roles: string[]) => {
   return async (
