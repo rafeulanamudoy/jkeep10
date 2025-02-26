@@ -3,6 +3,8 @@ import { authController } from "./auth.controller";
 import validateRequest from "../../middlewares/validateRequest";
 import { authValidation } from "./auth.validation";
 import auth from "../../middlewares/auth";
+import { multerUpload } from "../../../helpers/fileUploader";
+import { parseBodyData } from "../../middlewares/parseBodyData";
 
 const router = express.Router();
 
@@ -16,20 +18,14 @@ router.post(
 router.get("/profile", auth(), authController.getProfile);
 
 router.patch(
-  "/update/user-location",
-  auth(),
-  authController.updateUserLocation
-);
-
-router.post("/send-otp", authController.sendForgotPasswordOtp);
-router.post("/verify-otp", authController.verifyForgotPasswordOtpCode);
-router.patch("/reset-password", auth(), authController.resetPassword);
-
-router.put(
   "/profile",
+  multerUpload.single("profileImage"),
+  parseBodyData,
   validateRequest(authValidation.updateProfileSchema),
   auth(),
   authController.updateProfile
 );
-
+router.post("/otp-verify",authController.verifyOtp)
+router.post("/send-otp", authController.sendForgotPasswordOtp);
+router.patch("/reset-password", auth(), authController.resetPassword);
 export const authRoute = router;

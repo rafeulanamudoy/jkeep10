@@ -9,7 +9,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: 201,
-    message: "User created successfully",
+    message: "A Otp has been send to your gmail",
     data: result,
   });
 });
@@ -61,6 +61,7 @@ const deleteUser = catchAsync(async (req: any, res: Response) => {
     message: "user deleted successfully",
   });
 });
+
 
 export const UserControllers = {
   createUser,

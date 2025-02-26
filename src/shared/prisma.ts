@@ -1,63 +1,25 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
-  log: [
-    {
-      emit: "event",
-      level: "error",
-    },
-  ],
+  log: ["query", "info", "warn", "error"], 
 });
 
-prisma.$on("error", (e) => {
-  console.log(e);
+// Handle disconnection on exit
+process.on("SIGINT", async () => {
+  await prisma.$disconnect();
+  console.info("🔄 Prisma disconnected due to SIGINT");
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  await prisma.$disconnect();
+  console.info("🔄 Prisma disconnected due to SIGTERM");
+  process.exit(0);
+});
+
+process.on("beforeExit", async () => {
+  await prisma.$disconnect();
+  console.info("🔄 Prisma disconnected due to process exit");
 });
 
 export default prisma;
-
-// import { PrismaClient } from "@prisma/client";
-
-// const prisma = new PrismaClient({
-//     log: [
-//         {
-//             emit: 'event',
-//             level: 'query',
-//         },
-//         {
-//             emit: 'event',
-//             level: 'error',
-//         },
-//         {
-//             emit: 'event',
-//             level: 'info',
-//         },
-//         {
-//             emit: 'event',
-//             level: 'warn',
-//         },
-//     ],
-// })
-
-// prisma.$on('query', (e) => {
-//     console.log("-------------------------------------------")
-//     console.log('Query: ' + e.query);
-//     console.log("-------------------------------------------")
-//     console.log('Params: ' + e.params)
-//     console.log("-------------------------------------------")
-//     console.log('Duration: ' + e.duration + 'ms')
-//     console.log("-------------------------------------------")
-// })
-
-// // prisma.$on('warn', (e) => {
-// //     console.log(e)
-// // })
-
-// // prisma.$on('info', (e) => {
-// //     console.log(e)
-// // })
-
-// // prisma.$on('error', (e) => {
-// //     console.log(e)
-// // })
-
-// export default prisma;

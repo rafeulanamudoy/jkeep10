@@ -1,73 +1,50 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+import ApiError from "../errors/ApiErrors";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "uploads"));
-  },
-  filename: function (req, file, cb) {
-    // Add a timestamp to the original filename
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    const baseName = path.basename(file.originalname, ext);
-
-    const newFilename = `${timestamp}-${baseName}${ext}`;
-    cb(null, newFilename);
-  },
-});
-
-const upload = multer({ storage: storage });
-
-// Upload single images
-const updateProfileImage = upload.single("avatar");
-const uploadQuizImage = upload.single("quizImage");
-
-// Upload multiple images for portfolio
-const sendFiles = upload.fields([
-  { name: "sendFiles", maxCount: 10 },
-  { name: "messageFiles", maxCount: 10 },
-]);
-
-export const fileUploader = {
-  sendFiles,
-  updateProfileImage,
-  uploadQuizImage,
-};
-
-// const storage = multer.memoryStorage();
-
-// const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: 3000 * 1024 * 1024 }, // 3000 MB limit
-//   fileFilter: (req, file, cb) => {
-//     const allowedMimeTypes = [
-//       "image/jpeg",
-//       "image/png",
-//       "video/mp4",
-//       "video/x-matroska",
-//     ];
-//     if (!allowedMimeTypes.includes(file.mimetype)) {
-//       return cb(new Error("File type not allowed") as unknown as null, false);
-//     }
-//     cb(null, true);
+// const multerUpload = multer({
+//   storage: multer.memoryStorage(), // Store file in memory (buffer)
+//   limits: {
+//     fileSize: 50 * 1024 * 1024, // Optional: limit file size (50MB in this example)
 //   },
 // });
 
-// // upload single image
-// const courseImage = upload.single("courseImage");
-// const profileImage = upload.single("profileImage");
-// const coverPhoto = upload.single("coverPhoto");
+// export { multerUpload };
 
-// // upload multiple image
-// const uploadMultiple = upload.fields([
-//   { name: "thumbnail", maxCount: 1 },
-//   { name: "classVideo", maxCount: 1 },
-// ]);
+// Ensure the uploads directory exists
+const uploadDir = "uploads";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
-// export const fileUploader = {
-//   upload,
-//   courseImage,
-//   uploadMultiple,
-//   profileImage,
-//   coverPhoto,
-// };
+// Configure storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Specify the destination folder
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    // Customize the filename
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const fileExtension = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
+  },
+});
+
+// Configure multer with storage and file filter
+const multerUpload = multer({
+  storage: storage, // Pass the configured storage
+  fileFilter: (req, file, cb) => {
+    // Allowed file types
+    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (!allowedTypes.includes(file.mimetype)) {
+    }
+    cb(null, true);
+  },
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50 MB file size limit
+  },
+});
+
+export { multerUpload };

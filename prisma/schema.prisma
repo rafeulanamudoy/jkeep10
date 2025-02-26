@@ -8,50 +8,90 @@ generator client {
 }
 
 model User {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  username     String
-  email        String         @unique
-  password     String
-  role         UserRole       @default(USER)
-  status       UserStatus     @default(ACTIVE)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  userLocation UserLocation[]
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  username      String          @unique
+  name          String?
+  email         String          @unique
+  password      String
+  role          UserRole        @default(USER)
+  fcpmToken     String?
+  profileImage  String?         @default("")
+  status        UserStatus      @default(PENDING)
+  CreateEvent   Event[]
+  EventLocation EventLocation[]
+  Booking       Booking[]
 
   @@map("users")
 }
 
-model UserLocation {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String?  @db.ObjectId
-  latitude  Float
-  longitude Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User?    @relation(fields: [userId], references: [id])
+model Event {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String @db.ObjectId
+  eventName String
+  eventType String
 
-  @@map("user_locations")
+  selectedDate DateTime
+
+  startTime DateTime
+  endTime   DateTime
+
+  eventDesc        String
+  vipSeatCount     Int    @default(0)
+  economySeatCount Int    @default(0)
+  vipSeatPrice     Float  @default(0)
+  economySeatPrice Float  @default(0)
+  enrollCount      Int?   @default(0)
+
+  user          User            @relation(fields: [userId], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  eventLocation EventLocation[]
+  Booking       Booking[]
+
+  @@map("event")
 }
 
-model Otp {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  otpCode   String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model EventLocation {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  eventId String @db.ObjectId
+  event   Event  @relation(fields: [eventId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String @db.ObjectId
+  lat     Float
+  long    Float
 
-  @@map("otps")
+  @@map("event_location")
+}
+
+model Booking {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  eventId String @db.ObjectId
+  event   Event  @relation(fields: [eventId], references: [id])
+  userId  String @db.ObjectId
+  user    User   @relation(fields: [userId], references: [id])
+}
+
+model OtpModel {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  code      String
+  otpExpiry DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("otpModel")
 }
 
 enum UserStatus {
   ACTIVE
   BLOCKED
   DELETED
+  PENDING
 }
 
 enum UserRole {
   ADMIN
   SUPER_ADMIN
   USER
+  ORGANIZER
 }

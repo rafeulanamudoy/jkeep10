@@ -7,6 +7,7 @@ export default {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
   backend_base_url: process.env.BACKEND_BASE_URL,
+  base_url: process.env.BASE_URL,
   jwt: {
     jwt_secret: process.env.JWT_SECRET,
     gen_salt: process.env.GEN_SALT,

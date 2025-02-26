@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
 import { authService } from "./auth.service";
 import sendResponse from "../../../shared/sendResponse";
+import ApiError from "../../../errors/ApiErrors";
+import httpStatus from "http-status";
+import config from "../../../config";
 
 //login user
 const loginUser = catchAsync(async (req: Request, res: Response) => {
@@ -22,62 +25,6 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-//update user location
-const updateUserLocation = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.user;
-  const updatedUser = await authService.userLocationUpdateInDB(id, req.body);
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "User location added successfully",
-    data: updatedUser,
-  });
-});
-
-//send forgot password otp
-const sendForgotPasswordOtp = catchAsync(
-  async (req: Request, res: Response) => {
-    const email = req.body.email as string;
-    const response = await authService.sendForgotPasswordOtpDB(email);
-
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "OTP send successfully",
-      data: response,
-    });
-  }
-);
-
-// verify forgot password otp code
-const verifyForgotPasswordOtpCode = catchAsync(
-  async (req: Request, res: Response) => {
-    const payload = req.body;
-    const response = await authService.verifyForgotPasswordOtpCodeDB(payload);
-
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "OTP verified successfully.",
-      data: response,
-    });
-  }
-);
-
-// update forgot password
-const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user.id;
-  const { newPassword } = req.body;
-  const result = await authService.resetForgotPasswordDB(newPassword, userId);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Password updated successfully.",
-    data: result,
-  });
-});
-
 // get profile for logged in user
 const getProfile = catchAsync(async (req: any, res: Response) => {
   const { id } = req.user;
@@ -94,7 +41,18 @@ const getProfile = catchAsync(async (req: any, res: Response) => {
 // update user profile only logged in user
 const updateProfile = catchAsync(async (req: any, res: Response) => {
   const { id } = req.user;
-  const updatedUser = await authService.updateProfileIntoDB(id, req.body);
+  const file = req.file as unknown as Express.Multer.File;
+  console.log(file,"check file")
+
+  const userData=req.body
+
+  if (file) {
+    const fileUrl = `${config.base_url}/uploads/${file.filename}`;
+    userData.profileImage=fileUrl
+  }
+console.log(userData)
+   
+  const updatedUser = await authService.updateProfileIntoDB(id, userData);
 
   sendResponse(res, {
     statusCode: 200,
@@ -103,13 +61,65 @@ const updateProfile = catchAsync(async (req: any, res: Response) => {
     data: updatedUser,
   });
 });
+const verifyOtp = catchAsync(async (req: any, res: Response) => {
+  const payload = req.body;
+  const response = await authService.verifyOtp(payload);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "OTP verified successfully.",
+    data: response,
+  });
+});
+const sendForgotPasswordOtp = catchAsync(
+  async (req: Request, res: Response) => {
+    const email = req.body.email as string;
+    const response = await authService.sendForgotPassword(email);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "OTP send successfully",
+      data: response,
+    });
+  }
+);
+
+const verifyForgotPasswordOtpCode = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload = req.body;
+    const response = await authService.verifyForgotPasswordOtp(payload);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "OTP verified successfully.",
+      data: response,
+    });
+  }
+);
+
+// update forgot password
+const resetPassword = catchAsync(async (req: any, res: Response) => {
+  const userId = req.user.id;
+  const { newPassword } = req.body;
+  const result = await authService.resetForgotPassword(newPassword, userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Password updated successfully.",
+    data: result,
+  });
+});
 
 export const authController = {
   loginUser,
   getProfile,
   updateProfile,
-  updateUserLocation,
-  sendForgotPasswordOtp,
-  verifyForgotPasswordOtpCode,
+  verifyOtp,
   resetPassword,
+  verifyForgotPasswordOtpCode,
+  sendForgotPasswordOtp
 };
