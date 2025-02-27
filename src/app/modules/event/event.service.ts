@@ -11,17 +11,12 @@ import {
   format,
   formatISO,
   parseISO,
-  parse
+  parse,
 } from "date-fns";
-
-
-
-
 
 const createEvent = async (payload: any) => {
   try {
-    const selectedDate = new Date(payload.selectedDate); 
-
+    const selectedDate = new Date(payload.selectedDate);
 
     const startDateTime = parse(
       `${format(selectedDate, "yyyy-MM-dd")} ${payload.startTime}`,
@@ -35,37 +30,46 @@ const createEvent = async (payload: any) => {
       new Date()
     );
 
-    
     if (format(endDateTime, "h:mm a") === "12:00 AM") {
       endDateTime = addDays(endDateTime, 1);
     }
-
 
     if (endDateTime <= startDateTime) {
       throw new Error("End time must be after start time.");
     }
 
-
     const startTimeISO = formatISO(startDateTime);
     const endTimeISO = formatISO(endDateTime);
-    const selectedDateISO = formatISO(selectedDate, { representation: "complete" });
+    const selectedDateISO = formatISO(selectedDate, {
+      representation: "complete",
+    });
 
-    console.log("Start Time (ISO):", startTimeISO);
-    console.log("End Time (ISO):", endTimeISO);
+    const [event] = await prisma.$transaction([
+      prisma.event.create({
+        data: {
+          eventDesc: payload.eventDesc,
+          eventName: payload.eventName,
+          eventType: payload.eventType,
+          selectedDate: selectedDateISO,
+          startTime: startTimeISO,
+          endTime: endTimeISO,
+          economySeatCount: payload.economySeatCount,
+          economySeatPrice: payload.economySeatPrice,
+          vipSeatCount: payload.vipSeatCount,
+          vipSeatPrice: payload.vipSeatPrice,
+          userId: payload.userId,
+        },
+      }),
+    ]);
 
-    // Store event in the database
-    const event = await prisma.event.create({
+    await prisma.eventLocation.create({
       data: {
-        eventDesc: payload.eventDesc,
-        eventName: payload.eventName,
-        eventType: payload.eventType,
-        selectedDate: selectedDateISO,
-        startTime: startTimeISO,
-        endTime: endTimeISO,
-        economySeatCount: payload.economySeatCount,
-        economySeatPrice: payload.economySeatPrice,
-        vipSeatCount: payload.vipSeatCount,
-        vipSeatPrice: payload.vipSeatPrice,
+        city: payload.city,
+        lat: payload.lat,
+        long: payload.long,
+        state: payload.state,
+        zipCode: payload.zipCode,
+        eventId: event.id,
         userId: payload.userId,
       },
     });
@@ -76,8 +80,6 @@ const createEvent = async (payload: any) => {
     throw new Error(error);
   }
 };
-
-
 
 const getAllEvents = async (
   filters: any,
@@ -117,27 +119,24 @@ const getAllEvents = async (
   }
 
   if (filtersData.timeBase) {
-
     const now = new Date();
-    console.log(now,"check time")
-  
+    console.log(now, "check time");
+
     andCondition.push({
       selectedDate: {
         gte: startOfDay(now),
-        lte: endOfDay(now), 
+        lte: endOfDay(now),
       },
-      startTime:{
-        
+      startTime: {
         lte: now,
       },
-      endTime:{
+      endTime: {
         gte: now,
-      }
+      },
     });
-  
-
   }
   if (filtersData.timeByDate === "today") {
+    console.log("today");
     andCondition.push({
       selectedDate: {
         gte: startOfDay(new Date()),
@@ -157,10 +156,24 @@ const getAllEvents = async (
   }
 
   if (filtersData.timeByDate === "week") {
+    const today = new Date();
+    const nextWeek = addDays(today, 7);
+
     andCondition.push({
       selectedDate: {
-        gte: startOfWeek(new Date()),
-        lte: endOfWeek(new Date()),
+        gte: startOfDay(today),
+        lte: endOfDay(nextWeek),
+      },
+    });
+  }
+  if (filtersData.city && filtersData.state) {
+    andCondition.push({
+      eventLocation: {
+        some: { 
+          city: { equals: filtersData.city, mode: "insensitive" },
+          state:{equals:filtersData.state,mode:"insensitive"}
+         },
+        
       },
     });
   }
@@ -176,9 +189,19 @@ const getAllEvents = async (
     include: {
       user: {
         select: {
+          id: true,
           username: true,
           email: true,
         },
+      },
+      eventLocation: {
+        select:{
+          city:true,
+          state:true,
+          zipCode:true,
+          lat:true,
+          long:true
+        }
       },
     },
   });
@@ -190,4 +213,32 @@ const getAllEvents = async (
   };
 };
 
-export const eventService = { createEvent, getAllEvents };
+//  const getEventsByLocation=async(lat:number,long:number)=>{
+//   const events=await prisma.event.findMany({
+//     where:{
+//       eventLocation:{
+//         some:
+//       }
+//     }
+//   })
+
+const getSingleEvent = async (id: string) => {
+  const event = await prisma.event.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return event;
+};
+
+export const eventService = { createEvent, getAllEvents, getSingleEvent };

@@ -39,7 +39,7 @@ const loginUserIntoDB = async (payload: ILogin) => {
     config.jwt.expires_in as string
   );
 
-  const { password, status, createdAt, updatedAt, ...userInfo } = user;
+  const { password, status, ...userInfo } = user;
 
   return {
     accessToken,
@@ -58,7 +58,7 @@ const getProfileFromDB = async (userId: string) => {
     throw new ApiError(404, "user not found!");
   }
 
-  const { password, createdAt, updatedAt, ...sanitizedUser } = user;
+  const { password,  ...sanitizedUser } = user;
 
   return sanitizedUser;
 };

@@ -42,7 +42,7 @@ const getProfile = catchAsync(async (req: any, res: Response) => {
 const updateProfile = catchAsync(async (req: any, res: Response) => {
   const { id } = req.user;
   const file = req.file as unknown as Express.Multer.File;
-  console.log(file,"check file")
+
 
   const userData=req.body
 

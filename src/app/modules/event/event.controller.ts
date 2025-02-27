@@ -6,18 +6,19 @@ import { eventService } from "./event.service";
 import pick from "../../../shared/pick";
 import { paginationFileds } from "../../../helpers/paginationOptions";
 import { filterableField } from "../../../helpers/searchableFields";
+import httpStatus from "http-status";
 
 //login user
 
 // get profile for logged in user
 const createEvent = catchAsync(async (req: any, res: Response) => {
-  const event = req.body;
+
   const user = req.user;
   const eventData = { ...req.body, userId: user.id };
   const data = await eventService.createEvent(eventData);
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: httpStatus.CREATED,
     success: true,
     message: "Event Create Successfully",
     data: data,
@@ -35,8 +36,22 @@ const getAllEvents = catchAsync(async (req: any, res: Response) => {
     data: data,
   });
 });
+const getSingleEvent = catchAsync(async (req: any, res: Response) => {
+
+  const data = await eventService.getSingleEvent(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Single Event get Successfully",
+    data: data,
+  });
+});
+
+
 
 export const eventController = {
   createEvent,
-  getAllEvents
+  getAllEvents,
+  getSingleEvent
 };

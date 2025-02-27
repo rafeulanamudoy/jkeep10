@@ -12,5 +12,6 @@ router.post(
   eventController.createEvent
 );
 router.get("/get-all-events",eventController.getAllEvents)
+router.get("/:id",eventController.getSingleEvent)
 
 export const eventRoute = router;
